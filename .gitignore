@@ -1,0 +1,9 @@
+# Loại bỏ file model nặng
+swinv2_transformerdecoder.pth
+*.pth
+*.pt
+
+# Loại bỏ thư mục không cần thiết
+__pycache__/
+.vscode/
+*.log
