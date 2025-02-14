@@ -1,6 +1,7 @@
 import os
 import json
 import torch
+import requests
 import numpy as np
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
@@ -14,11 +15,19 @@ app = FastAPI()
 # 📥 Định nghĩa đường dẫn
 MODEL_PATH = "./swinv2_transformerdecoder.pth"
 TOKENIZER_PATH = "./tokenizer"
+HUGGINGFACE_MODEL_URL = "https://huggingface.co/NguyenKhiem/SwinV2Transformer/resolve/main/swinv2_transformerdecoder.pth"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-# 📥 Tải mô hình
+# 📥 Tải mô hình từ Hugging Face nếu chưa có
 if not os.path.exists(MODEL_PATH):
-    raise FileNotFoundError(f"❌ Không tìm thấy mô hình tại: {MODEL_PATH}")
+    print("🔄 Đang tải mô hình từ Hugging Face...")
+    response = requests.get(HUGGINGFACE_MODEL_URL)
+    if response.status_code == 200:
+        with open(MODEL_PATH, "wb") as f:
+            f.write(response.content)
+        print("✅ Tải mô hình thành công!")
+    else:
+        raise FileNotFoundError(f"❌ Không thể tải mô hình, mã lỗi: {response.status_code}")
 
 # Khởi tạo model
 model = ImageCaptionModel()  
